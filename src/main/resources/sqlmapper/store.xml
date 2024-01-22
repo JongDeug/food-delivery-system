@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.StoreMapper">
+
+    <resultMap id="result" type="persistence.dto.StoreDTO">
+        <result property="pk" column="pk"/>
+        <result property="storeName" column="storeName"/>
+        <result property="storeIntro" column="storeIntro"/>
+        <result property="storeAddress" column="storeAddress"/>
+        <result property="storeTel" column="storeTel"/>
+        <result property="storeStartHours" column="storeStartHours"/>
+        <result property="storeEndHours" column="storeEndHours"/>
+        <result property="storeManagerFk" column="storeManagerFk"/>
+        <result property="response" column="response"/>
+    </resultMap>
+
+
+    <insert id="registerStore" parameterType="persistence.dto.StoreDTO">
+        INSERT INTO deliveryService.store (storeName, storeIntro, storeAddress, storeTel,
+                                           storeStartHours, storeEndHours, storeManagerFk, response)
+        VALUES (#{storeName}, #{storeIntro}, #{storeAddress}, #{storeTel},
+                #{storeStartHours}, #{storeEndHours}, #{storeManagerFk}, "요청")
+    </insert>
+
+    <update id="updateBusinessHours" parameterType="Map">
+        update deliveryService.store
+        set storeStartHours = #{storeStartTime},
+            storeEndHours   = #{storeEndTime}
+        where pk = #{storePk}
+          and response = '접수'
+    </update>
+
+    <select id="readStoreInfo" parameterType="int" resultMap="result">
+        select *
+        from deliveryService.store
+        where pk = #{pk}
+          and response = '접수'
+    </select>
+
+    <select id="readStoreInfoAll" resultMap="result">
+        select *
+        from deliveryService.store
+        where response = '접수'
+    </select>
+
+    <select id="readStoreManagerInfo" parameterType="int" resultType="int">
+        select storeManagerFk
+        from deliveryService.store
+        where pk = #{pk}
+          and response = '접수'
+    </select>
+
+    <select id="readMyStores" parameterType="int" resultMap="result">
+        select *
+        from deliveryService.store
+        where storeManagerFk = #{fk}
+          and response = '접수'
+    </select>
+
+    <!--    요청 읽기-->
+    <select id="responseStoreRead" resultMap="result">
+        select *
+        from deliveryService.store
+        where response = '요청'
+    </select>
+
+    <!--    응답-->
+    <update id="responseStore" parameterType="Map">
+        update deliveryService.store
+        set response = #{response}
+        where pk = #{pk}
+    </update>
+
+
+</mapper>

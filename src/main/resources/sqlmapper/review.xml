@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.ReviewMapper">
+    <resultMap id="result" type="persistence.dto.ReviewDTO">
+        <result property="pk" column="pk"/>
+        <result property="orderFk" column="orderFk"/>
+        <result property="memberId" column="memberId"/>
+        <result property="reviewContent" column="reviewContent"/>
+        <result property="starRating" column="starRating"/>
+        <result property="storeManagerId" column="storeManagerId"/>
+        <result property="replyToReviewContent" column="replyToReviewContent"/>
+    </resultMap>
+
+    <insert id="registerReviewAndStarRating" parameterType="persistence.dto.ReviewDTO">
+        insert into deliveryService.review (orderFk, memberId, reviewContent, starRating, storeManagerId,
+                                            replyToReviewContent)
+        values (#{orderFk}, #{memberId}, #{reviewContent}, #{starRating}, #{storeManagerId}, #{replyToReviewContent})
+    </insert>
+
+    <update id="registerReplyToReview" parameterType="persistence.dto.ReviewDTO">
+        update deliveryService.review
+        set storeManagerId       = #{storeManagerId},
+            replyToReviewContent = #{replyToReviewContent}
+        where pk = #{pk}
+    </update>
+
+    <select id="readStoreReview" parameterType="int" resultMap="result">
+        select b.pk, b.memberId, b.reviewContent, b.starRating, b.storeManagerId, b.replyToReviewContent
+        from deliveryService.order a
+                 join deliveryService.review b on a.pk = b.orderFk
+        where a.storeFk = #{fk};
+    </select>
+
+    <select id="readReviewForFk" parameterType="int" resultMap="result">
+        select *
+        from deliveryService.review
+        where orderFk = #{fk}
+    </select>
+
+    <select id="readReviewForPk" parameterType="int" resultMap="result">
+        select *
+        from deliveryService.review
+        where pk = #{pk}
+    </select>
+</mapper>

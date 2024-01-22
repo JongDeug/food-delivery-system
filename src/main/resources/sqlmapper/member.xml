@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.MemberMapper">
+    <resultMap id="result" type="persistence.dto.MemberDTO">
+        <result property="pk" column="pk"/>
+        <result property="memberId" column="memberId"/>
+        <result property="memberPassword" column="memberPassword"/>
+        <result property="memberName" column="memberName"/>
+        <result property="memberAge" column="memberAge"/>
+        <result property="memberTel" column="memberTel"/>
+        <result property="memberRole" column="memberRole"/>
+        <result property="response" column="response"/>
+    </resultMap>
+
+    <insert id="registerSignUp" parameterType="persistence.dto.MemberDTO">
+        insert into deliveryService.member (memberId, memberPassword, memberName, memberAge, memberTel, memberRole,
+                                            response)
+        values (#{memberId}, #{memberPassword}, #{memberName}, #{memberAge}, #{memberTel}, #{memberRole}, "요청")
+    </insert>
+
+    <select id="readMyAccountInfo" parameterType="int" resultMap="result">
+        select *
+        from deliveryService.member
+        where pk = #{pk}
+          and response = "요청"
+    </select>
+
+    <select id="readAccount" parameterType="string" resultMap="result">
+        select *
+        from deliveryService.member
+        where memberId = #{memberId}
+          and memberRole = "client"
+          and response = "요청"
+    </select>
+    <select id="readStoreManagerAccount" parameterType="string" resultMap="result">
+        select *
+        from deliveryService.member
+        where memberId = #{memberId}
+          and memberRole = "storeManager"
+          and response = "접수"
+    </select>
+    <select id="readAdminAccount" parameterType="string" resultMap="result">
+        select *
+        from deliveryService.member
+        where memberId = #{memberId}
+          and memberRole = "admin"
+          and response = "요청"
+    </select>
+
+    <select id="readStoreManagerInfo" resultMap="result">
+        select *
+        from deliveryService.member
+        where memberRole = "storeManager"
+          and response = "접수"
+    </select>
+
+    <select id="readClientInfo" resultMap="result">
+        select *
+        from deliveryService.member
+        where memberRole = "client"
+          and response = "요청"
+    </select>
+
+    <update id="updateProfile" parameterType="persistence.dto.MemberDTO">
+        update deliveryService.member
+        set memberPassword = #{memberPassword},
+            memberName     = #{memberName},
+            memberAge      = #{memberAge}
+        where pk = #{pk}
+          and response = "요청"
+    </update>
+
+    <select id="checkDuplicate" parameterType="String" resultType="String">
+        select memberId
+        from deliveryService.member
+        where memberId = #{memberId}
+    </select>
+
+    <!--    요청 읽기-->
+    <select id="responseStoreManagerRead" resultMap="result">
+        select *
+        from deliveryService.member
+        where response = "요청" and memberRole = "storeManager"
+    </select>
+
+    <!--    응답-->
+    <update id="responseStoreManager" parameterType="Map">
+        update deliveryService.member
+        set response = #{response}
+        where pk = #{pk}
+    </update>
+</mapper>

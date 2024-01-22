@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.MenuMapper">
+    <resultMap id="result" type="persistence.dto.MenuDTO">
+        <result property="pk" column="pk"/>
+        <result property="storeFk" column="storeFk"/>
+        <result property="menuCategory" column="menuCategory"/>
+        <result property="menuName" column="menuName"/>
+        <result property="menuPrice" column="menuPrice"/>
+        <result property="menuAvailableOption" column="menuAvailableOption"/>
+        <result property="menuAmount" column="menuAmount"/>
+        <result property="response" column="response"/>
+    </resultMap>
+
+    <insert id="registerMenu" parameterType="persistence.dto.MenuDTO">
+        insert into deliveryService.menu (storeFk, menuCategory, menuName, menuPrice, menuAvailableOption, menuAmount,
+                                          response)
+        values (#{storeFk}, #{menuCategory}, #{menuName}, #{menuPrice}, #{menuAvailableOption}, #{menuAmount},
+                "요청")
+    </insert>
+
+    <select id="menuPrice" parameterType="Map" resultType="int">
+        select menuPrice
+        from deliveryService.menu
+        where storeFk = #{storeFk}
+          and menuName = #{menuName}
+          and response = "접수"
+    </select>
+
+    <select id="menuAmount" parameterType="Map" resultType="int">
+        select menuAmount
+        from deliveryService.menu
+        where storeFk = #{storeFk}
+          and menuName = #{menuName}
+          and response = "접수"
+    </select>
+
+    <update id="updateAmount" parameterType="Map">
+        update deliveryService.menu
+        <choose>
+            <when test='operator == "+"'>
+                set menuAmount = menuAmount + 1
+            </when>
+            <otherwise>
+                set menuAmount = menuAmount - 1
+            </otherwise>
+        </choose>
+        where menuName = #{menuName} and response = "접수"
+    </update>
+
+
+    <select id="readStoreMenuInfo" parameterType="int" resultMap="result">
+        select *
+        from deliveryService.menu
+        where storeFk = #{fk}
+          and response = "접수"
+    </select>
+
+
+    <!--    요청 읽기-->
+    <select id="responseMenuRead" resultMap="result">
+        select *
+        from deliveryService.menu
+        where response = "요청"
+    </select>
+
+    <!--    응답-->
+    <update id="responseMenu" parameterType="Map">
+        update deliveryService.menu
+        set response = #{response}
+        where pk = #{pk}
+    </update>
+</mapper>

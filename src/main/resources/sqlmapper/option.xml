@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.OptionMapper">
+
+    <resultMap id="result" type="persistence.dto.OptionDTO">
+        <result property="pk" column="pk"/>
+        <result property="storeFk" column="storeFk"/>
+        <result property="optionName" column="optionName"/>
+        <result property="optionPrice" column="optionPrice"/>
+        <result property="response" column="response"/>
+    </resultMap>
+
+    <insert id="registerMenuOption" parameterType="persistence.dto.OptionDTO">
+        insert into deliveryService.option (storeFk, optionName, optionPrice, response)
+        values (#{storeFk}, #{optionName}, #{optionPrice}, "요청")
+    </insert>
+
+    <select id="optionPrice" parameterType="Map" resultType="int">
+        select optionPrice
+        from deliveryService.option
+        where storeFk = #{storeFk}
+          and optionName = #{optionName} and response = "접수"
+    </select>
+
+    <select id="readStoreMenuOptionInfo" parameterType="int" resultMap="result">
+        select *
+        from deliveryService.option
+        where storeFk = #{fk} and response = "접수"
+    </select>
+
+
+    <!--    요청 읽기-->
+    <select id="responseMenuOptionRead" resultMap="result">
+        select *
+        from deliveryService.option
+        where response = "요청"
+    </select>
+
+    <!--    응답-->
+    <update id="responseMenuOption" parameterType="Map">
+        update deliveryService.option
+        set response = #{response}
+        where pk = #{pk}
+    </update>
+</mapper>

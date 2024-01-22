@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.OrderMapper">
+    <resultMap id="result" type="persistence.dto.OrderDTO">
+        <result property="pk" column="pk"/>
+        <result property="storeFk" column="storeFk"/>
+        <result property="memberId" column="memberId"/>
+        <result property="orderMenu" column="orderMenu"/>
+        <result property="orderOptions" column="orderOptions"/>
+        <result property="orderPrice" column="orderPrice"/>
+        <result property="orderStatus" column="orderStatus"/>
+        <result property="orderDateTime" column="orderDateTime"/>
+        <result property="response" column="response"/>
+    </resultMap>
+
+    <insert id="registerOrder" parameterType="persistence.dto.OrderDTO">
+        INSERT INTO deliveryService.order(storeFk, memberId, orderMenu, orderOptions, orderPrice, orderStatus,
+                                          orderDateTime, response)
+        VALUES (#{storeFk},
+                #{memberId},
+                #{orderMenu},
+                #{orderOptions},
+                #{orderPrice},
+                #{orderStatus},
+                #{orderDateTime},
+                "요청")
+    </insert>
+
+    <update id="updateStatus" parameterType="map">
+        update deliveryService.order
+        set orderStatus = #{setOrderStatus}
+        where orderStatus = #{originalStatus}
+          and pk = #{pk} and response = "접수"
+    </update>
+
+    <select id="readOrderInfoAll" parameterType="int" resultMap="result">
+        select *
+        from deliveryService.order
+        where storeFk = #{fk} and response = "접수"
+    </select>
+
+    <select id="readMyOrderInfo" parameterType="string" resultMap="result">
+        select *
+        from deliveryService.order
+        where memberId = #{memberId} and response = "접수"
+    </select>
+
+    <select id="readMyOrderResInfo" parameterType="string" resultMap="result">
+        select *
+        from deliveryService.order
+        where memberId = #{memberId}
+    </select>
+
+    <select id="readOrderInfo" parameterType="int" resultMap="result">
+        select *
+        from deliveryService.order
+        where pk = #{pk}
+    </select>
+
+<!--    요청-->
+    <update id="registerCancleOrder">
+        update deliveryService.order
+        set response = "취소요청"
+        where pk = #{pk}
+    </update>
+
+<!--    응답 읽기-->
+    <select id="responseCancleOrderRead" parameterType="int" resultMap="result">
+        select *
+        from deliveryService.order
+        where storeFk = #{storeFk} and response = "취소요청"
+    </select>
+
+    <select id="responseOrderRead" parameterType="int" resultMap="result">
+        select *
+        from deliveryService.order
+        where storeFk = #{storeFk} and response = "요청"
+    </select>
+
+<!--    응답-->
+    <update id="responseCancleOrder" parameterType="Map">
+        update deliveryService.order
+        set response = #{response}
+        where pk = #{pk}
+    </update>
+
+    <update id="responseOrder" parameterType="Map">
+        update deliveryService.order
+        set response = #{response}
+        where pk = #{pk}
+    </update>
+</mapper>
